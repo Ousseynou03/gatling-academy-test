@@ -96,8 +96,15 @@ public class DemostoreApiSimulation extends Simulation {
                          }
                  )
     .exec(http("Get Product")
-        .get("/api/product/34")
-    );
+        .get("/api/product/#{productId}")
+        .check(jmesPath("id").ofInt().isEL("#{productId}"))
+        .check(jmesPath("@").ofMap().saveAs("product")))
+                 .exec(
+                         session -> {
+                             System.out.println("value of product : " + session.get("product").toString());
+                             return session;
+                         }
+                 );
 
     private static ChainBuilder update =
     feed(productsFeeder)
